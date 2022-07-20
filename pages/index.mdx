@@ -1,54 +1,216 @@
-<p style="font-size:14px" align="center">
-  2 Aylık 100$ Kredili Ücretsiz VPS <br>
-100$ Free VPS for 2 Month <br>
- 100$ бесплатно VPS на 2 месяца <br>
- <a target="_blank" href="https://www.digitalocean.com/?refcode=410c988c8b3e&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge"><img src="https://web-platforms.sfo2.cdn.digitaloceanspaces.com/WWW/Badge%201.svg" alt="DigitalOcean Referral Badge" /></a></br>
-</p>
-<p style="font-size:14px" align="center">
-<b>Bu sayfa, çeşitli kripto proje sunucularının nasıl çalıştırılacağına ilişkin eğitimler içerir. </b><br>
-<b>This page contains tutorials on how to operate various crypto project servers. </b><br>
-<b>Эта страница содержит руководства по работе с различными серверами криптографических проектов. </b> <br>
-<a href="https://t.me/nodeistt" target="_blank"><img src="https://github.com/Nodeist/Testnet_Kurulumlar/blob/fee87fe32609c1704206721b9fb16e4c5de75a96/telegramlogo.png" width="64"/></a> <br>Telegrama Katıl.<br>Join Telegram.<br>Присоединяйтесь к Telegram.<br> <br>
-<a href="https://nodeist.net/" target="_blank"><img src="https://raw.githubusercontent.com/Nodeist/Testnet_Kurulumlar/main/logo.png" width="64"/></a> <br>Websitemizi Ziyaret et. <br>Visit Our Website. <br>Посетите наш сайт. <br>
-<br> 
-<a href="https://discord.gg/ypx7mJ6Zzb" target="_blank"><img src="https://cdn.logojoy.com/wp-content/uploads/20210422095037/discord-mascot.png" width="64"/></a> <br>Discord'a katıl <br>Join Discord <br>Присоединяйтесь к Discord <br>
-
-</p>
 
 
 
-Peer bul
-```
-curl -sS http://localhost:36657/net_info | jq -r '.result.peers[] | "\(.node_info.id)@\(.remote_ip):\(.node_info.listen_addr)"' | awk -F ':' '{print $1":"$(NF)}'
-```
+![image](https://i.hizliresim.com/cdpen5h.png)
 
-Aktif set
-```
-query staking validators --limit 2000 -o json | jq -r '.validators[] | select(.status=="BOND_STATUS_BONDED") | [.operator_address, .status, (.tokens|tonumber / pow(10; 6)), .description.moniker] | @csv' | column -t -s"," | sort -k3 -n -r
-```
+# Another-1 Kurulum Rehberi
+## Donanım Gereksinimleri
+Herhangi bir Cosmos-SDK zinciri gibi, donanım gereksinimleri de oldukça mütevazı.
 
-İnaktif set
-```
-query staking validators --limit 2000 -o json | jq -r '.validators[] | select(.status=="BOND_STATUS_UNBONDED") | [.operator_address, .status, (.tokens|tonumber / pow(10; 6)), .description.moniker] | @csv' | column -t -s"," | sort -k3 -n -r
+### Minimum Donanım Gereksinimleri
+ - 3x CPU; saat hızı ne kadar yüksek olursa o kadar iyi
+ - 4GB RAM
+ - 80GB Disk
+ - Kalıcı İnternet bağlantısı (testnet sırasında trafik minimum 10Mbps olacak - üretim için en az 100Mbps bekleniyor)
+
+### Önerilen Donanım Gereksinimleri
+ - 4x CPU; saat hızı ne kadar yüksek olursa o kadar iyi
+ - 8GB RAM
+ - 200 GB depolama (SSD veya NVME)
+ - Kalıcı İnternet bağlantısı (testnet sırasında trafik minimum 10Mbps olacak - üretim için en az 100Mbps bekleniyor)
+
+## Anone Full Node Kurulum Adımları
+### Tek Script İle Otomatik Kurulum
+Aşağıdaki otomatik komut dosyasını kullanarak Anone fullnode'unuzu birkaç dakika içinde kurabilirsiniz. 
+Script sırasında size node isminiz (NODENAME) sorulacak!
+
+
+```bash
+wget -O ANONE.sh https://raw.githubusercontent.com/Nodeist/Kurulumlar/main/Anone/ANONE && chmod +x ANONE.sh && ./ANONE.sh
 ```
 
-### Kullanılan portlar: 
+### Kurulum Sonrası Adımlar
 
-| Network           | Port       |
-| --------------- | ---------- |
-| Celestia        |   30       |
-| Clan            |   31       |
-| Defund          |   32       |
-| Deweb           |   33       |
-| Kujira          |   34       |
-| Kyve            |   35       |
-| Quicksilver     |   36       |
-| Sei             |   37       |
-| BOŞ             |   38       |
-| BOŞ             |   39       |
-| Uptick          |   40       |
-| Paloma          |   41       |
-| Another-1       |   42       |
-| CrowdControl    |   43       |
-| Stride          |   44       |
-| Teritori        |   45       |
+Doğrulayıcınızın blokları senkronize ettiğinden emin olmalısınız. 
+Senkronizasyon durumunu kontrol etmek için aşağıdaki komutu kullanabilirsiniz.
+```bash
+anoned status 2>&1 | jq .SyncInfo
+```
+
+### Cüzdan Oluşturma
+Yeni cüzdan oluşturmak için aşağıdaki komutu kullanabilirsiniz. Hatırlatıcıyı (mnemonic) kaydetmeyi unutmayın.
+```bash
+anoned keys add $ANONE_WALLET
+```
+
+(OPSIYONEL) Cüzdanınızı hatırlatıcı (mnemonic) kullanarak kurtarmak için:
+```bash
+anoned keys add $ANONE_WALLET --recover
+```
+
+Mevcut cüzdan listesini almak için:
+```bash
+anoned keys list
+```
+
+### Cüzdan Bilgilerini Kaydet
+Cüzdan Adresi Ekleyin:
+```bash
+ANONE_WALLET_ADDRESS=$(anoned keys show $ANONE_WALLET -a)
+ANONE_VALOPER_ADDRESS=$(anoned keys show $ANONE_WALLET --bech val -a)
+echo 'export ANONE_WALLET_ADDRESS='${ANONE_WALLET_ADDRESS} >> $HOME/.bash_profile
+echo 'export ANONE_VALOPER_ADDRESS='${ANONE_VALOPER_ADDRESS} >> $HOME/.bash_profile
+source $HOME/.bash_profile
+```
+
+
+### Doğrulayıcı oluştur
+Doğrulayıcı oluşturmadan önce lütfen en az 1 an1'ye sahip olduğunuzdan (1 an1 1000000 uan1'e eşittir) ve düğümünüzün senkronize olduğundan emin olun.
+
+Cüzdan bakiyenizi kontrol etmek için:
+```bash
+anoned query bank balances $ANONE_WALLET_ADDRESS
+```
+> Cüzdanınızda bakiyenizi göremiyorsanız, muhtemelen düğümünüz hala eşitleniyordur. Lütfen senkronizasyonun bitmesini bekleyin ve ardından devam edin. 
+
+Doğrulayıcı Oluşturma:
+```bash
+anoned tx staking create-validator \
+  --amount 1000000uan1 \
+  --from $ANONE_WALLET \
+  --commission-max-change-rate "0.01" \
+  --commission-max-rate "0.2" \
+  --commission-rate "0.07" \
+  --min-self-delegation "1" \
+  --pubkey  $(anoned tendermint show-validator) \
+  --moniker $ANONE_NODENAME \
+  --chain-id $ANONE_ID \
+  --fees 250uan1
+```
+
+
+
+## Kullanışlı Komutlar
+### Servis Yönetimi
+Logları Kontrol Et:
+```bash
+journalctl -fu anoned -o cat
+```
+
+Servisi Başlat:
+```bash
+systemctl start anoned
+```
+
+Servisi Durdur:
+```bash
+systemctl stop anoned
+```
+
+Servisi Yeniden Başlat:
+```bash
+systemctl restart anoned
+```
+
+### Node Bilgileri
+Senkronizasyon Bilgisi:
+```bash
+anoned status 2>&1 | jq .SyncInfo
+```
+
+Validator Bilgisi:
+```bash
+anoned status 2>&1 | jq .ValidatorInfo
+```
+
+Node Bilgisi:
+```bash
+anoned status 2>&1 | jq .NodeInfo
+```
+
+Node ID Göser:
+```bash
+anoned tendermint show-node-id
+```
+
+### Cüzdan İşlemleri
+Cüzdanları Listele:
+```bash
+anoned keys list
+```
+
+Mnemonic kullanarak cüzdanı kurtar:
+```bash
+anoned keys add $ANONE_WALLET --recover
+```
+
+Cüzdan Silme:
+```bash
+anoned keys delete $ANONE_WALLET
+```
+
+Cüzdan Bakiyesi Sorgulama:
+```bash
+anoned query bank balances $ANONE_WALLET_ADDRESS
+```
+
+Cüzdandan Cüzdana Bakiye Transferi:
+```bash
+anoned tx bank send $ANONE_WALLET_ADDRESS <TO_WALLET_ADDRESS> 10000000uan1
+```
+
+### Oylama
+```bash
+anoned tx gov vote 1 yes --from $ANONE_WALLET --chain-id=$ANONE_ID
+```
+
+### Stake, Delegasyon ve Ödüller
+Delegate İşlemi:
+```bash
+anoned tx staking delegate $ANONE_VALOPER_ADDRESS 10000000uan1 --from=$ANONE_WALLET --chain-id=$ANONE_ID --gas=auto --fees 250uan1
+```
+
+Payını doğrulayıcıdan başka bir doğrulayıcıya yeniden devretme:
+```bash
+anoned tx staking redelegate <srcValidatorAddress> <destValidatorAddress> 10000000uan1 --from=$ANONE_WALLET --chain-id=$ANONE_ID --gas=auto --fees 250uan1
+```
+
+Tüm ödülleri çek:
+```bash
+anoned tx distribution withdraw-all-rewards --from=$ANONE_WALLET --chain-id=$ANONE_ID --gas=auto --fees 250uan1
+```
+
+Komisyon ile ödülleri geri çekin:
+```bash
+anoned tx distribution withdraw-rewards $ANONE_VALOPER_ADDRESS --from=$ANONE_WALLET --commission --chain-id=$ANONE_ID
+```
+
+### Doğrulayıcı Yönetimi
+Validatör İsmini Değiştir:
+```bash
+anoned tx staking edit-validator \
+--moniker=NEWNODENAME \
+--chain-id=$ANONE_ID \
+--from=$ANONE_WALLET
+```
+
+Hapisten Kurtul(Unjail): 
+```bash
+anoned tx slashing unjail \
+  --broadcast-mode=block \
+  --from=$ANONE_WALLET \
+  --chain-id=$ANONE_ID \
+  --gas=auto --fees 250uan1
+```
+
+
+Node Tamamen Silmek:
+```bash
+sudo systemctl stop anoned
+sudo systemctl disable anoned
+sudo rm /etc/systemd/system/anone* -rf
+sudo rm $(which anoned) -rf
+sudo rm $HOME/.anone* -rf
+sudo rm $HOME/anone -rf
+sed -i '/ANONE_/d' ~/.bash_profile
+```
