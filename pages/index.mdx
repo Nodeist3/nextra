@@ -1,24 +1,4 @@
-import Link from 'next/link'
-
-// `onClick`, `href`, and `ref` need to be passed to the DOM element
-// for proper handling
-const MyButton = React.forwardRef(({ onClick, href }, ref) => {
-  return (
-    <a href={href} onClick={onClick} ref={ref}>
-      Click Me
-    </a>
-  )
-})
-
-function Home() {
-  return (
-    <Link href="/about" passHref>
-      <MyButton />
-    </Link>
-  )
-}
-
-export default Home
+<Image src="https://i.hizliresim.com/r12vuda.png" alt="Hello" width={500} height={500} />
 
 # Another-1 Kurulum Rehberi
 ## Donanım Gereksinimleri
